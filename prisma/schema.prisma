@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  templates Template[]
+  bots      Bot[]
+}
+
+model Template {
+  id        Int           @id @default(autoincrement())
+  ownerId   Int
+  name      String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  owner     User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  texts     TemplateText[]
+  bots      Bot[]
+
+  @@unique([ownerId, name])
+}
+
+model TemplateText {
+  id         Int      @id @default(autoincrement())
+  templateId Int
+  key        String
+  text       String
+
+  template   Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@unique([templateId, key])
+}
+
+model Bot {
+  id         Int      @id @default(autoincrement())
+  ownerId    Int
+  templateId Int      // ✅ majburiy
+  token      String   // ✅ majburiy
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  template  Template @relation(fields: [templateId], references: [id], onDelete: Restrict)
+
+  sessions  Session[]
+  botTexts  BotText[]
+}
+
+model BotText {
+  id     Int    @id @default(autoincrement())
+  botId  Int
+  key    String
+  text   String
+
+  bot    Bot    @relation(fields: [botId], references: [id], onDelete: Cascade)
+
+  @@unique([botId, key])
+}
+
+model Session {
+  id     Int    @id @default(autoincrement())
+  botId  Int
+  userId BigInt
+  path   String?
+
+  bot    Bot    @relation(fields: [botId], references: [id], onDelete: Cascade)
+
+  @@index([botId])
+  @@index([userId])
+}
