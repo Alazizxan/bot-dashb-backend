@@ -12,6 +12,13 @@ import authRoutes from "./routes/auth.routes";
 import templateRoutes from "./routes/template.routes";
 import botRoutes from "./routes/bot.routes";
 import dashboardRoutes from "./routes/dashboard.routes";
+import sessionRoutes from "./routes/session.routes";
+
+
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
+
 
 export const app = express();
 
@@ -33,6 +40,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/templates", templateRoutes);
 app.use("/api/bots", botRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/sessions", sessionRoutes); 
 
 app.use(notFound);
 app.use(errorHandler);

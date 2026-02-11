@@ -8,26 +8,24 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
   password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  templates Template[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   bots      Bot[]
+  templates Template[]
 }
 
 model Template {
-  id        Int           @id @default(autoincrement())
+  id        Int            @id @default(autoincrement())
   ownerId   Int
   name      String
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-
-  owner     User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  texts     TemplateText[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
   bots      Bot[]
+  owner     User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  texts     TemplateText[]
 
   @@unique([ownerId, name])
 }
@@ -37,47 +35,49 @@ model TemplateText {
   templateId Int
   key        String
   text       String
-
   template   Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
 
   @@unique([templateId, key])
 }
 
 model Bot {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   ownerId    Int
-  templateId Int      // ✅ majburiy
-  token      String   // ✅ majburiy
-  isActive   Boolean  @default(true)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  template  Template @relation(fields: [templateId], references: [id], onDelete: Restrict)
-
-  sessions  Session[]
-  botTexts  BotText[]
+  templateId Int
+  token      String
+  name       String    @default("My bot")
+  isActive   Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  owner      User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  template   Template  @relation(fields: [templateId], references: [id])
+  botTexts   BotText[]
+  sessions   Session[]
 }
 
 model BotText {
-  id     Int    @id @default(autoincrement())
-  botId  Int
-  key    String
-  text   String
-
-  bot    Bot    @relation(fields: [botId], references: [id], onDelete: Cascade)
+  id    Int    @id @default(autoincrement())
+  botId Int
+  key   String
+  text  String
+  bot   Bot    @relation(fields: [botId], references: [id], onDelete: Cascade)
 
   @@unique([botId, key])
 }
 
 model Session {
-  id     Int    @id @default(autoincrement())
-  botId  Int
-  userId BigInt
-  path   String?
+  id            Int      @id @default(autoincrement())
+  botId         Int
+  userId        BigInt
+  path          String?
+  phone         String?
+  sessionString String?
+  isAuthed      Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now())
+  bot           Bot      @relation(fields: [botId], references: [id], onDelete: Cascade)
 
-  bot    Bot    @relation(fields: [botId], references: [id], onDelete: Cascade)
-
+  @@unique([botId, userId])
   @@index([botId])
   @@index([userId])
 }

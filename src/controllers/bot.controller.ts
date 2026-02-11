@@ -30,7 +30,8 @@ export async function createBot(req: AuthedRequest, res: Response) {
     data: {
       ownerId: userId,
       templateId: body.templateId,
-      token: body.token
+      token: body.token,
+      name: body.name ?? "My bot"
     }
   });
 

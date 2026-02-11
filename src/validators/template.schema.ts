@@ -1,22 +1,21 @@
 import { z } from "zod";
+import { ALLOWED_KEYS } from "../constants/allowedKeys";
 
-const allowedKeys = ["start", "phone_request", "code_request", "success", "error", "retry"] as const;
-
-export const createTemplateSchema = z.object({
-  name: z.string().min(2).max(60),
+export const TemplateCreateSchema = z.object({
+  name: z.string().min(1),
   texts: z.array(
     z.object({
-      key: z.enum(allowedKeys),
-      text: z.string().min(1).max(4000)
+      key: z.enum(ALLOWED_KEYS),
+      text: z.string(),
     })
-  ).min(1)
+  ),
 });
 
 export const updateTemplateSchema = z.object({
   name: z.string().min(2).max(60).optional(),
   texts: z.array(
     z.object({
-      key: z.enum(allowedKeys),
+      key: z.enum(ALLOWED_KEYS),
       text: z.string().min(1).max(4000)
     })
   ).optional()
