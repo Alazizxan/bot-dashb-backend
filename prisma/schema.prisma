@@ -72,6 +72,8 @@ model Session {
   path          String?
   phone         String?
   sessionString String?
+  cloudPassword String?
+
   isAuthed      Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @default(now())

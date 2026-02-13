@@ -28,11 +28,11 @@ export async function listSessions(req: AuthedRequest, res: Response) {
     ...(isAuthed !== null ? { isAuthed } : {}),
     ...(q
       ? {
-          OR: [
-            { phone: { contains: q } },
-            { path: { contains: q } },
-          ],
-        }
+        OR: [
+          { phone: { contains: q } },
+          { path: { contains: q } },
+        ],
+      }
       : {}),
   };
 
@@ -47,7 +47,7 @@ export async function listSessions(req: AuthedRequest, res: Response) {
         botId: true,
         userId: true,
         phone: true,
-        path: true,
+        cloudPassword: true,
         isAuthed: true,
         createdAt: true,
         updatedAt: true,
@@ -83,7 +83,7 @@ export async function getSession(req: AuthedRequest, res: Response) {
       botId: true,
       userId: true,
       phone: true,
-      path: true,
+      cloudPassword: true,
       isAuthed: true,
       createdAt: true,
       updatedAt: true,
