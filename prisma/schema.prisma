@@ -8,13 +8,15 @@ datasource db {
 }
 
 model User {
-  id        Int        @id @default(autoincrement())
-  email     String     @unique
-  password  String
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  bots      Bot[]
-  templates Template[]
+  id             Int            @id @default(autoincrement())
+  email          String         @unique
+  password       String
+  userMarketLink String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  bots           Bot[]
+  templates      Template[]
+  refreshTokens  RefreshToken[]
 }
 
 model Template {
@@ -45,10 +47,10 @@ model Bot {
   ownerId    Int
   templateId Int
   token      String
-  name       String    @default("My bot")
   isActive   Boolean   @default(true)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
+  name       String    @default("My bot")
   owner      User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   template   Template  @relation(fields: [templateId], references: [id])
   botTexts   BotText[]
@@ -70,16 +72,27 @@ model Session {
   botId         Int
   userId        BigInt
   path          String?
+  createdAt     DateTime @default(now())
+  isAuthed      Boolean  @default(false)
   phone         String?
   sessionString String?
-  cloudPassword String?
-
-  isAuthed      Boolean  @default(false)
-  createdAt     DateTime @default(now())
   updatedAt     DateTime @default(now())
+  cloudPassword String?
   bot           Bot      @relation(fields: [botId], references: [id], onDelete: Cascade)
 
   @@unique([botId, userId])
   @@index([botId])
+  @@index([userId])
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
 }
